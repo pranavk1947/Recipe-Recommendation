@@ -1,0 +1,67 @@
+[project]
+name = "whats-for-dinner"
+version = "0.1.0"
+description = "Recommends one cookbook recipe for the ingredients you have: FastAPI, Haystack RAG over pgvector, OpenAI."
+authors = [{ name = "Pranav Kumar", email = "kumarpranav931@gmail.com" }]
+
+requires-python = ">=3.12"
+dependencies = [
+    "haystack-ai==2.12.0",
+    "fastapi>=0.115.0",
+    "pillow>=10.4.0",
+    "uvicorn[standard]>=0.27.0",
+    "psycopg[binary]>=3.2.6",
+    "pydantic-settings>=2.2.1",
+    "pgvector-haystack>=3.4.1,<4",
+    "python-multipart>=0.0.20",
+    "openai>=1.75.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["whats_for_dinner*"]
+
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "anyio>=4.9",
+    "httpx>=0.28",
+    "pyright>=1.1.400",
+    "pytest>=8.3",
+    "ruff>=0.11",
+]
+
+[project.scripts]
+ingest = "whats_for_dinner.cli.ingest:main"
+search = "whats_for_dinner.cli.search:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["*_test.py", "test_*.py"]
+markers = ["integration: needs Postgres and a live LLM provider (opt-in)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+# ruff formats python blocks inside markdown; keep it off our docs
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC", "ANN", "N", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"*_test.py" = ["ANN"]
+"tests/**" = ["ANN"]
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+reportMissingTypeStubs = false
+reportUntypedClassDecorator = false
